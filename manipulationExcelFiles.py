@@ -1,3 +1,4 @@
+from logging import exception
 import openpyxl as xl
 
 def returnWorkSheet (workBook, sheetName):
@@ -40,15 +41,21 @@ def createPivotTable (sourceWorkSheet, destinWorkSheet):
 
 
 
-fDirectory = "C:\\Users\\NAJIB\\Desktop\\Practices" #"D:\\Inument_Files\\Practices"
-# "C:\\Users\\NAJIB\\Desktop\\Practices"
+fDirectory = "C:\\Users\\NAJIB\\Desktop\\Practices" #"D:\\Inument_Files\\Practices" # "C:\\Users\\NAJIB\\Desktop\\Practices"
 sourceFile = fDirectory + "\\Excel\\SourceFile.xlsx"
-wb = xl.load_workbook(sourceFile)
-print(f"Number of worksheet: {len(wb.sheetnames)}")
-ws1 = wb.worksheets[1]
-ws2 = wb.create_sheet("Pivoted3")
-createPivotTable(ws1, ws2)
-wb.save(sourceFile)
+
+try:
+    wb = xl.load_workbook(sourceFile)
+    ws1 = wb.worksheets[1]
+    ws2 = wb.create_sheet("Pivoted10")
+except Exception as e:
+    print(f"An error occurred: {e}")
+else:
+    createPivotTable(ws1, ws2)
+    wb.save(sourceFile)
+finally:
+    print(f"Number of worksheet: {len(wb.sheetnames)}")
+
 
 #
 # fDirectory = "D:\\Inument_Files\\Practices"
