@@ -20,6 +20,14 @@ def create_new_sheets(input_file, input_sheet_name, output_file, output_sheet_na
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def create_data_frame(input_file, input_sheet_name, output_file, output_sheet_name, row_indices, column_indices):
+    try:
+        df = pd.read_excel(input_file, sheet_name=input_sheet_name)
+        selected_data = df.iloc[row_indices, column_indices]
+        return pd.DataFrame(selected_data, columns=df.columns[column_indices])
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def get_row_index(input_file, input_sheet_name, search_value, search_column):
     try:
         df = pd.read_excel(input_file, sheet_name=input_sheet_name)
