@@ -54,6 +54,8 @@ def get_row_index(input_file, input_sheet_name, search_value, search_column):
     try:
         df = pd.read_excel(input_file, sheet_name=input_sheet_name)
         return df[df[search_column] == search_value].index[0]
+        #return df[(df==search_value).any(axis=1)]
+        #return df.loc[df[search_column] == search_value]
     except IndexError:
         return -1
 
@@ -71,12 +73,26 @@ def find_duplicate_rows_in_column(input_file, input_sheet_name, column_name):
     except Exception as e:
         return print(f"An error occurred: {e}")
 
+def get_selected_column_data_for_row(input_file, input_sheet_name, search_value, search_column):
+    try:
+        df = pd.read_excel(input_file, sheet_name=input_sheet_name)
+        return df.loc[df[search_column] == search_value]
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return -1
+
+def get_selected_column_data_for_row_from_df(df, search_value, search_column):
+    try:
+        return df.loc[df[search_column] == search_value]
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return -1
 
 
-execution_directory = "C:\\Users\\NAJIB\\Desktop\\Practices"
-i_file = execution_directory + "\\Excel\\SourceFile2.xlsx"
-i_s_name = 'Sheet1'
-o_file = execution_directory + "\\Excel\\OutputFile2.xlsx"
+execution_directory = "C:\\Users\\mahbu\\Desktop\\Practices"
+i_file = execution_directory + "\\Profiling Master- QC.xlsx"
+i_s_name = 'Main Data'
+o_file = execution_directory + "\\OutputFile2.xlsx"
 o_s_name = 'Scrapped_Sheet'
 #r_num = 1 # here considering first row will have column names, therefore that'd be -1, next
 #c_indices = [0, 1, 3, 5, 6, 7]
@@ -103,16 +119,16 @@ o_s_name = 'Scrapped_Sheet'
 # else:
 #     print(f"'{c_name}' not found in the Worksheet: {i_s_name}.")
 #
-c_names = ['Id', 'Name', 'Email', 'CompanyCategoryId', 'ShortName']
-r_values = ['BFS Chicken', 'MZ Resort', 'Northern Bank Limited', 'Indian Spicy King', 'The Food Factory']
-c_indices = []
-r_indices = []
-
-for c_name in c_names:
-    c_indices.append(get_column_index(i_file,i_s_name,c_name))
-
-for r_value in r_values:
-    r_indices.append(get_row_index(i_file,i_s_name,r_value,c_names[1]))
+# c_names = ['Id', 'Agent Name', 'Month', 'Active Listening', 'Verbal Excellence', 'Courteous Approach', 'Identification and Action for Resolution', 'Correct & Complete Information For Resolution (CCIR)', 'Avoid Rude/Unprofessional Behavior/Approach (ARU)','Ownership & Proctiveness (OP)']
+# r_values = ['Shusmoy Kundu']
+# c_indices = []
+# r_indices = []
+#
+# for c_name in c_names:
+#     c_indices.append(get_column_index(i_file,i_s_name,c_name))
+#
+# for r_value in r_values:
+#     r_indices.append(get_row_index(i_file,i_s_name,r_value,c_names[1]))
 
 # print(c_indices)
 # print('\n')
@@ -129,7 +145,23 @@ for r_value in r_values:
 # ddf = pd.DataFrame(data=d)
 # print(ddf)
 
-t_df = create_data_frame(input_file=i_file, input_sheet_name=i_s_name, row_indices=r_indices, column_indices=c_indices)
-write_to_output_file(df=t_df, output_file=o_file, output_sheet_name="NormalData")
-t_df1 = create_transposed_frame_from_df(t_df)
-write_to_output_file(df=t_df1, output_file=o_file, output_sheet_name="TransposedData")
+#t_df = create_data_frame(input_file=i_file, input_sheet_name=i_s_name, row_indices=r_indices, column_indices=c_indices)
+# t_df = get_selected_column_data_for_row(input_file=i_file, input_sheet_name=i_s_name, search_value='Shusmoy Kundu', search_column='Agent Name')
+# t_df = get_selected_column_data_for_row_from_df(df=t_df,search_column='Month', search_value='Jan')
+# print(t_df)
+# write_to_output_file(df=t_df, output_file=o_file, output_sheet_name="NormalData")
+# t_df1 = create_transposed_frame_from_df(t_df)
+# write_to_output_file(df=t_df1, output_file=o_file, output_sheet_name="TransposedData")
+
+c_nam = ['Month', 'Active Listening', 'Verbal Excellence', 'Courteous Approach', 'Identification and Action for Resolution', 'Correct & Complete Information For Resolution (CCIR)', 'Avoid Rude/Unprofessional Behavior/Approach (ARU)','Ownership & Proctiveness (OP)']
+
+def return_selected_columns_of_selected_row(input_file, input_sheet_name ,filter_column,filter_value, c_names):
+    try:
+        df = pd.read_excel(input_file, sheet_name=input_sheet_name)
+        return df[df[filter_column]==filter_value][c_names]
+    except Exception as e:
+        print(f"An error occurred {e}")
+        return -1
+
+t_dfff = return_selected_columns_of_selected_row(input_file=i_file,input_sheet_name=i_s_name,filter_column='Agent Name',filter_value='Shusmoy Kundu',c_names=c_nam)
+print(t_dfff)
