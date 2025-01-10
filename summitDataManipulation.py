@@ -1,4 +1,8 @@
 import pandas as pd
+import os
+#ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.getcwd()
+print(ROOT_DIR)
 
 def write_to_output_file(df, output_file, output_sheet_name):
     try:
@@ -7,8 +11,8 @@ def write_to_output_file(df, output_file, output_sheet_name):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-execution_directory = "C:\\Users\\mahbu\\Desktop\\Practices"
-i_file = execution_directory + "\\Profiling Master- QC.xlsx"
+execution_directory = os.getcwd()
+i_file = execution_directory + "\\Data\\Profiling Master- QC.xlsx"
 i_s_name = 'Main Data'
 o_file = execution_directory + "\\OutputFile2.xlsx"
 o_s_name = 'Scrapped_Sheet'
