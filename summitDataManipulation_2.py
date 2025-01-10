@@ -69,17 +69,21 @@ month_data = {}
 for month_name in month_names:
     t_df_1 = return_sliced_data_frame(sliced_t_df_to_agent,'Month',month_name)
     month_count = {}
+    month_row_count = {}
     for i in range(1, len(c_nam)):
         cname = c_nam[i]
+        month_row_count[cname, month_name] = len(t_df_1)
         month_count[cname] = return_selected_row_count(input_df=t_df_1, column_name=cname, row_value='Pass')
     month_data[month_name] = month_count
+    print(month_row_count)
 #print(month_data)
 
-exp_df = pd.DataFrame(month_data)
-exp_df_2 = exp_df.T
-exp_df_3 = exp_df_2.T
-#print(exp_df_3)
-write_to_output_file(exp_df_3,o_file,agent_names[0])
+
+# exp_df = pd.DataFrame(month_data)
+# exp_df_2 = exp_df.T
+# exp_df_3 = exp_df_2.T
+# #print(exp_df_3)
+# write_to_output_file(exp_df_3,o_file,agent_names[0])
 #
 # for mData in month_data:
 #     mDataValue = month_data[mData]
