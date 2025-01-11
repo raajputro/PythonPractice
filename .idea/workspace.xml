@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="290f4d53-52ef-43c2-9874-ffda732049e5" name="Changes" comment="first push">
+      <change afterPath="$PROJECT_DIR$/summitDataMan_3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/summitDataMan_4.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/summit_data_5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/MyPythonProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MyPythonProject.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/OutputFile2.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/OutputFile2.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/summitDataManipulation_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/summitDataManipulation_2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,8 +57,11 @@
     "Python.manipulationExcelFiles.executor": "Run",
     "Python.manipulationUsingPandas.executor": "Run",
     "Python.openCloseExcel.executor": "Run",
+    "Python.summitDataMan_3.executor": "Run",
+    "Python.summitDataMan_4.executor": "Run",
     "Python.summitDataManipulation.executor": "Run",
     "Python.summitDataManipulation_2.executor": "Run",
+    "Python.summit_data_5.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "t2",
