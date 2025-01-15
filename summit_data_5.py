@@ -1,5 +1,9 @@
 import os
 import pandas as pd
+from openpyxl.reader.excel import load_workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.workbook import Workbook
+
 
 # Function to plot data in to excel sheet
 def write_to_output_file(df, output_file, output_sheet_name):
@@ -19,8 +23,6 @@ def write_df_to_output_file(excel_writer, data_frame, output_sheet_name, start_r
         worksheet = excel_writer.book.create_sheet(output_sheet_name)
     data_frame.to_excel(excel_writer, sheet_name=output_sheet_name, startcol=start_col, startrow=start_row, index=index,
                         header=header)
-
-
 
 def write_dfs_to_output_file(dataframes, output_file, output_sheet_name):
     try:
@@ -51,22 +53,28 @@ def write_dfs_to_output_file(dataframes, output_file, output_sheet_name):
     except Exception as e:
         print(f"From def: write_dfs_to_output_file -> An error occurred: {e}")
 
+def write_multi_dfs_to_file(output_file, output_sheet, dataframes):
+    try:
+        workbook = load_workbook(output_file)
+        if output_sheet in workbook.sheetnames:
+            workbook.remove(workbook[output_sheet])
+        worksheet = workbook.create_sheet(output_sheet)
+    except FileNotFoundError:
+        workbook = Workbook()
+        worksheet = workbook.active
+        worksheet.title = output_sheet
+
+    for df in dataframes:
+        for row in dataframe_to_rows(df, index=True, header=True):
+            worksheet.append(row)
+        worksheet.append([])
+    workbook.save(output_file)
+
 def create_transposed_frame_from_df(dataframe):
     try:
         return dataframe.T
     except Exception as e:
         print(f"From def: create_transposed_frame_from_df -> An error occurred: {e}")
-
-# Parameters
-execution_directory = os.getcwd()
-i_file = execution_directory + "\\Data\\Profiling Master- QC.xlsx"
-i_s_name = 'Main Data'
-o_file = execution_directory + "\\Data\\OutputFile2.xlsx"
-o_s_name = 'Scrapped_Sheet'
-c_nam = ['Month','Active Listening', 'Verbal Excellence', 'Courteous Approach',
-         'Identification and Action for Resolution', 'Correct & Complete Information For Resolution (CCIR)',
-         'Avoid Rude/Unprofessional Behavior/Approach (ARU)','Ownership & Proctiveness (OP)']
-
 
 # Custom functions to slice main data to specific data
 def get_all_data(input_file, input_sheet_name):
@@ -99,42 +107,6 @@ def return_sliced_data_frame(input_df, column_name, row_value):
     except Exception as e:
         print(f"An error occurred {e}")
         return -1
-
-
-#######################################################################################################################
-t_df = get_all_data(input_file=i_file, input_sheet_name=i_s_name)
-
-agent_names = t_df['Agent Name'].unique()
-month_names = t_df['Month'].unique()
-
-#######################################################################################################################
-#for agent_name in agent_names:
-agent_name = agent_names[0]
-sliced_t_df_to_agent = return_sliced_dataFrame(input_data_frame=t_df, filter_column='Agent Name',
-                                               filter_value=agent_name, column_names=c_nam)
-month_data = {}
-month_data_ratio = {}
-for month_name in month_names:
-    if month_name != 'Dec':
-        t_df_1 = return_sliced_data_frame(sliced_t_df_to_agent,'Month',month_name)
-        td_len = len(t_df_1)
-        if td_len == 0:
-        #    print(f"for agent name: {agent_name}, month: {month_name}, length: {td_len} and base data frame length: {stdta_len}")
-            td_len = 1
-        month_count = {}
-        month_ratio = {}
-        for i in range(1, len(c_nam)):
-            cname = c_nam[i]
-            month_count[cname] = return_selected_row_count(input_df=t_df_1, column_name=cname, row_value='Pass')
-            month_ratio[cname] = round((month_count[cname] * 100) / td_len)
-        month_data[month_name] = month_count
-        month_data_ratio[month_name] = month_ratio
-
-################### DataFrame for Pass/Fail #######################################
-t_df_11 = pd.DataFrame(month_data)
-################### DataFrame having ratio values ################################# to test data
-t_df_2 = pd.DataFrame(month_data_ratio)
-t_df_2['avg'] = round(t_df_2.iloc[:,1:len(t_df_2.columns)].mean(axis=1))
 ####################################################################################################################
 def slice_month_data_ratio(month_data_ratio, month_names, attributes_name):
     sliced_month_data = {}
@@ -154,28 +126,76 @@ def slice_month_data_ratio(month_data_ratio, month_names, attributes_name):
     return [test_df, avg_df]
 
 ####################################################################################################################
-#creating data frames array, according to following attribute groups
 ####################################################################################################################
-com_cnames = ['Verbal Excellence', 'Avoid Rude/Unprofessional Behavior/Approach (ARU)']
-emp_cnames = ['Courteous Approach', 'Active Listening']
-bus_cnames = ['Correct & Complete Information For Resolution (CCIR)', 'Identification and Action for Resolution']
-acc_cnames = ['Ownership & Proctiveness (OP)']
-dfs_array = [t_df_11]
-smdr = slice_month_data_ratio(month_data_ratio,month_names,com_cnames)
-for x in smdr:
-    dfs_array.append(x)
-    #print(f"Test DF: \n {x}")
-smdr = slice_month_data_ratio(month_data_ratio,month_names,emp_cnames)
-for x in smdr:
-    dfs_array.append(x)
-smdr = slice_month_data_ratio(month_data_ratio,month_names,bus_cnames)
-for x in smdr:
-    dfs_array.append(x)
-smdr = slice_month_data_ratio(month_data_ratio,month_names,acc_cnames)
-for x in smdr:
-    dfs_array.append(x)
 ####################################################################################################################
-# finally, write all data frames to work sheet
+# Parameters
+execution_directory = os.getcwd()
+i_file = execution_directory + "\\Data\\Profiling Master- QC.xlsx"
+i_s_name = 'Main Data'
+o_file = execution_directory + "\\Data\\OutputFile2.xlsx"
+o_s_name = 'Scrapped_Sheet'
+c_nam = ['Month','Active Listening', 'Verbal Excellence', 'Courteous Approach',
+         'Identification and Action for Resolution', 'Correct & Complete Information For Resolution (CCIR)',
+         'Avoid Rude/Unprofessional Behavior/Approach (ARU)','Ownership & Proctiveness (OP)']
+
+t_df = get_all_data(input_file=i_file, input_sheet_name=i_s_name)
+
+agent_names = t_df['Agent Name'].unique()
+month_names = t_df['Month'].unique()
+
 ####################################################################################################################
-agent_name = agent_name[:30]
-write_dfs_to_output_file(dataframes=dfs_array, output_file=o_file, output_sheet_name=agent_name)
+for agent_name in agent_names:
+#agent_name = agent_names[0]
+    sliced_t_df_to_agent = return_sliced_dataFrame(input_data_frame=t_df, filter_column='Agent Name',
+                                                   filter_value=agent_name, column_names=c_nam)
+    month_data = {}
+    month_data_ratio = {}
+    for month_name in month_names:
+        if month_name != 'Dec':
+            t_df_1 = return_sliced_data_frame(sliced_t_df_to_agent,'Month',month_name)
+            td_len = len(t_df_1)
+            if td_len == 0:
+            #    print(f"for agent name: {agent_name}, month: {month_name}, length: {td_len} and base data frame length: {stdta_len}")
+                td_len = 1
+            month_count = {}
+            month_ratio = {}
+            for i in range(1, len(c_nam)):
+                cname = c_nam[i]
+                month_count[cname] = return_selected_row_count(input_df=t_df_1, column_name=cname, row_value='Pass')
+                month_ratio[cname] = round((month_count[cname] * 100) / td_len)
+            month_data[month_name] = month_count
+            month_data_ratio[month_name] = month_ratio
+
+    ################### DataFrame for Pass/Fail #######################################
+    t_df_11 = pd.DataFrame(month_data)
+    ################### DataFrame having ratio values ################################# to test data
+    t_df_2 = pd.DataFrame(month_data_ratio)
+    t_df_2['avg'] = round(t_df_2.iloc[:,1:len(t_df_2.columns)].mean(axis=1))
+
+    ####################################################################################################################
+    #creating data frames array, according to following attribute groups
+    ####################################################################################################################
+    com_cnames = ['Verbal Excellence', 'Avoid Rude/Unprofessional Behavior/Approach (ARU)']
+    emp_cnames = ['Courteous Approach', 'Active Listening']
+    bus_cnames = ['Correct & Complete Information For Resolution (CCIR)', 'Identification and Action for Resolution']
+    acc_cnames = ['Ownership & Proctiveness (OP)']
+    dfs_array = [t_df_11]
+    smdr = slice_month_data_ratio(month_data_ratio,month_names,com_cnames)
+    for x in smdr:
+        dfs_array.append(x)
+        #print(f"Test DF: \n {x}")
+    smdr = slice_month_data_ratio(month_data_ratio,month_names,emp_cnames)
+    for x in smdr:
+        dfs_array.append(x)
+    smdr = slice_month_data_ratio(month_data_ratio,month_names,bus_cnames)
+    for x in smdr:
+        dfs_array.append(x)
+    smdr = slice_month_data_ratio(month_data_ratio,month_names,acc_cnames)
+    for x in smdr:
+        dfs_array.append(x)
+    ####################################################################################################################
+    # finally, write all data frames to work sheet
+    ####################################################################################################################
+    agent_name = agent_name[:30]
+    #write_dfs_to_output_file(dataframes=dfs_array, output_file=o_file, output_sheet_name=agent_name)
+    write_multi_dfs_to_file(output_file=o_file, output_sheet=agent_name, dataframes=dfs_array)
